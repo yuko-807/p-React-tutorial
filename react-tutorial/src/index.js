@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className='square' onClick={props.onClick}>
+    <button className="square" onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -14,31 +14,40 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squeares: Array(9).fill(null),
+      squares: Array(9).fill(null),
       xIsNext: true,
     };
   }
 
   handleClick(i) {
-    const squeares = this.state.squeares.slice();
-    squeares[i] = this.state.xIsNext ? 'X' : 'O';
+    const squares = this.state.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
-      squeares: squeares,
+      squares: squares,
       xIsNext: !this.state.xIsNext,
     });
   }
 
   renderSquare(i) {
     return (
-      <Square 
-        value={this.state.squeares[i]}
+      <Square
+        value={this.state.squares[i]}
         onClick={() => this.handleClick(i)}
       />
     );
   }
 
   render() {
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X' :'O');
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
 
     return (
       <div>
@@ -79,6 +88,11 @@ class Game extends React.Component {
   }
 }
 
+// ========================================
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Game />);
+
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -98,8 +112,3 @@ function calculateWinner(squares) {
   }
   return null;
 }
-
-// ========================================
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Game />);
